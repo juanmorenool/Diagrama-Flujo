@@ -3,8 +3,8 @@ import streamlit.components.v1 as components
 import base64
 
 st.set_page_config(
-    page_title="Framework IRRBB — Flujo del Modelo",
-    page_icon="📊",
+    page_title=" Flujo del Modelo Propuesto",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -23,7 +23,7 @@ header {visibility: hidden;}
 # ── Barra superior con controles mínimos ──
 col_title, col_controls = st.columns([4, 1])
 with col_title:
-    st.markdown("## 📊 Framework Interbank — IRRBB · Tarjetas de crédito")
+    st.markdown("## · Tarjetas de crédito")
     st.caption("Flujo del modelo: segmentación → utilización → amortización → ∆EVE")
 with col_controls:
     st.markdown("<br>", unsafe_allow_html=True)
