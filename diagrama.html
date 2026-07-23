@@ -87,7 +87,7 @@
 <text class="ts" x="190" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Saldo/Límite + exógenas</text>
 
 <rect x="360" y="340" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización (Logit+OLS)</text>
+<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización OLS Logit</text>
 <text class="ts" x="490" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Spread + desempleo lag2</text>
 
 <line x1="190" y1="404" x2="190" y2="440" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
@@ -136,7 +136,7 @@
   </section>
 
   <section>
-    <h2>Etapa 3 — Amortización (Logit + OLS)</h2>
+    <h2>Etapa 3 — Amortización OLS Logit</h2>
     <p class="body">Sobre el mismo universo revolver, agrupa por fecha y calcula <code class="field">Pagos_Totales</code>, <code class="field">Saldo_Total</code> y <code class="field">Tasa_Pago_Mensual = Pagos_Totales / Saldo_Total</code>. Tras el merge con la base macro, transforma el objetivo con <code class="field">TPR_Logit = log(TPR / (1 - TPR + ε))</code> y construye <code class="field">Desempleo_Lag2 = Tasa_Desempleo_Pct.shift(2)</code>.</p>
     <p class="body">La regresión estimada es <code class="field">TPR_Logit ~ Spread_TC_PP + Desempleo_Lag2</code> por OLS. La predicción en escala logit se revierte a porcentaje con la función logística: <code class="field">TPR_Predicho = 1 / (1 + exp(-predicción_logit))</code>.</p>
   </section>
