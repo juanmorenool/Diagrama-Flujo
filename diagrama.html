@@ -2,373 +2,121 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Framework Interbank — Flujo del Modelo IRRBB</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<title>Pipeline Revolver Tarjetas — Interbank</title>
 <style>
-  :root{
-    --ink:#0f1b2b;
-    --slate:#4a5a6e;
-    --mist:#8394a5;
-    --paper:#f6f4ee;
-    --card:#ffffff;
-    --line:#d8dce2;
-
-    --input:#6b7684;
-    --input-soft:#eef0f2;
-    --process:#1f4e79;
-    --process-soft:#e6edf5;
-    --output:#2f7a4f;
-    --output-soft:#e7f3ec;
-    --decision:#c1631b;
-    --decision-soft:#faeade;
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    background: #F7F6F2;
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--paper);
-    font-family:'IBM Plex Sans', -apple-system, sans-serif;
-    color:var(--ink);
-    padding:48px 24px 80px;
+  .wrap {
+    max-width: 720px;
+    width: 100%;
   }
-  .wrap{max-width:1180px;margin:0 auto;}
-
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11.5px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--process);
-    font-weight:600;
-    margin-bottom:10px;
+  .card {
+    background: #FFFFFF;
+    border: 1px solid #DAD8CE;
+    border-radius: 12px;
+    padding: 24px;
   }
-  h1{
-    font-size:30px;
-    font-weight:700;
-    margin:0 0 8px;
-    letter-spacing:-0.01em;
+  h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2C2C2A;
+    margin: 0 0 4px;
   }
-  .sub{
-    color:var(--slate);
-    font-size:15px;
-    max-width:640px;
-    line-height:1.5;
-    margin-bottom:36px;
+  p.sub {
+    font-size: 13px;
+    color: #5F5E5A;
+    margin: 0 0 20px;
   }
-
-  /* legend */
-  .legend{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:44px;
-  }
-  .chip{
-    display:flex;align-items:center;gap:7px;
-    font-size:12.5px;font-weight:500;color:var(--ink);
-    background:var(--card);
-    border:1px solid var(--line);
-    padding:6px 12px 6px 10px;
-    border-radius:100px;
-  }
-  .dot{width:9px;height:9px;border-radius:3px;flex:none;}
-
-  /* pipeline layout */
-  .rail{position:relative;}
-
-  .row{display:grid; grid-template-columns: 210px 1fr; gap:0; align-items:stretch; margin-bottom: 0;}
-  .row-label{
-    display:flex; align-items:center;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--mist); font-weight:600;
-    padding-right:18px;
-  }
-
-  .lane{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:26px;
-    position:relative;
-    padding: 22px 0;
-  }
-  .lane.inputs{grid-template-columns: repeat(3, 1fr);}
-
-  .card{
-    background:var(--card);
-    border-radius:12px;
-    border:1px solid var(--line);
-    padding:16px 18px;
-    position:relative;
-    box-shadow: 0 1px 2px rgba(15,27,43,0.04);
-  }
-  .card .tag{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
-    margin-bottom:6px; display:block;
-  }
-  .card .title{font-size:15px; font-weight:600; line-height:1.3; margin-bottom:4px;}
-  .card .desc{font-size:12.5px; color:var(--slate); line-height:1.45;}
-
-  .card.input{background:var(--input-soft); border-color:#d6dbe0;}
-  .card.input .tag{color:var(--input);}
-  .card.process{background:var(--process); border-color:var(--process);}
-  .card.process .tag{color:#bcd2ea;}
-  .card.process .title{color:#fff;}
-  .card.process .desc{color:#cfdcea;}
-  .card.output{background:var(--output-soft); border-color:#bfe0cc;}
-  .card.output .tag{color:var(--output);}
-  .card.decision{background:var(--decision); border-color:var(--decision);}
-  .card.decision .tag{color:#fbdcc0;}
-  .card.decision .title{color:#fff;}
-  .card.decision .desc{color:#fbe6d3;}
-
-  .mono-formula{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    background:rgba(255,255,255,0.14);
-    padding:6px 8px;
-    border-radius:6px;
-    margin-top:8px;
-    display:inline-block;
-  }
-  .card.decision .mono-formula{color:#fff;}
-
-  /* connectors */
-  .connectors{position:relative; height:34px;}
-  svg.conn{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
-  .arrow-line{stroke:#aab3bf; stroke-width:1.6; fill:none;}
-  .arrow-line.strong{stroke:#8fa0b3;}
-  marker path{fill:#aab3bf;}
-
-  .down-arrows{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:26px;
-    height:26px;
-  }
-  .down-arrows > div{display:flex; justify-content:center;}
-  .down-arrows svg{overflow:visible;}
-
-  .final-lane{
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap:26px;
-    padding: 22px 0 4px;
-  }
-  .final-lane .spacer{visibility:hidden;}
-  .final-lane .card{grid-column: span 1;}
-
-  .foot{
-    margin-top:52px;
-    padding-top:22px;
-    border-top:1px solid var(--line);
-    display:flex;
-    justify-content:space-between;
-    gap:24px;
-    flex-wrap:wrap;
-  }
-  .foot .note{font-size:12.5px; color:var(--slate); max-width:520px; line-height:1.5;}
-  .foot .note b{color:var(--ink);}
-  .foot .ref{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--mist);}
-
-  @media print{
-    body{background:#fff; padding:0;}
-  }
+  .t  { font: 400 14px/1.3 -apple-system, "Segoe UI", Arial, sans-serif; fill: #2C2C2A; }
+  .ts { font: 400 12px/1.3 -apple-system, "Segoe UI", Arial, sans-serif; }
+  .th { font: 600 14px/1.3 -apple-system, "Segoe UI", Arial, sans-serif; }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <h1>Pipeline de modelado — cartera revolver de tarjetas de crédito</h1>
+  <p class="sub">Interbank Perú · T_Credito.ipynb · segmentación, utilización y amortización</p>
+  <div class="card">
+<svg width="100%" viewBox="0 0 680 540" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Pipeline de modelado revolver tarjetas de crédito Interbank</title>
+<desc>Diagrama de flujo: inputs transaccionales y macro, segmentación conductual, modelos de utilización y amortización, y outputs finales.</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
 
-  <div class="eyebrow">Framework Interbank · Riesgo de tasa (IRRBB) · Tarjetas de crédito</div>
-  <h1>Del dato transaccional al insumo regulatorio para ∆EVE</h1>
-  <div class="sub">Flujo de las tres etapas del modelo: segmentación conductual, utilización de línea y velocidad de amortización — y cómo se combinan para alimentar la medición de riesgo de tasa bajo SRP31.</div>
+<!-- INPUTS (gray) -->
+<rect x="60" y="40" width="260" height="56" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text class="th" x="190" y="58" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">Datos transaccionales</text>
+<text class="ts" x="190" y="76" text-anchor="middle" dominant-baseline="central" fill="#444441">Cliente, saldo, pago</text>
 
-  <div class="legend">
-    <div class="chip"><span class="dot" style="background:var(--input)"></span>Datos crudos (input)</div>
-    <div class="chip"><span class="dot" style="background:var(--process)"></span>Procesamiento (modelo)</div>
-    <div class="chip"><span class="dot" style="background:var(--output)"></span>Output del modelo</div>
-    <div class="chip"><span class="dot" style="background:var(--decision)"></span>Insumo regulatorio / decisión</div>
+<rect x="340" y="40" width="260" height="56" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text class="th" x="470" y="58" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">Datos macroeconómicos</text>
+<text class="ts" x="470" y="76" text-anchor="middle" dominant-baseline="central" fill="#444441">ICC, desempleo, spread</text>
+
+<line x1="190" y1="96" x2="250" y2="140" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+<line x1="470" y1="96" x2="430" y2="140" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- PASO 1: SEGMENTACION (amber) -->
+<rect x="190" y="140" width="300" height="64" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text class="th" x="340" y="162" text-anchor="middle" dominant-baseline="central" fill="#412402">Segmentación conductual</text>
+<text class="ts" x="340" y="182" text-anchor="middle" dominant-baseline="central" fill="#633806">Ventana 6m, umbral 95%</text>
+
+<path d="M340 204 L340 232 L190 232 L190 260" fill="none" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M340 204 L340 232 L430 232 L430 260" fill="none" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- TOTALERO (gray, dead end) -->
+<rect x="100" y="260" width="180" height="56" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text class="th" x="190" y="280" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">Totalero</text>
+<text class="ts" x="190" y="298" text-anchor="middle" dominant-baseline="central" fill="#444441">Excluido de IRRBB</text>
+
+<!-- REVOLVER (amber, continues) -->
+<rect x="340" y="260" width="180" height="56" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+<text class="th" x="430" y="280" text-anchor="middle" dominant-baseline="central" fill="#412402">Revolver</text>
+<text class="ts" x="430" y="298" text-anchor="middle" dominant-baseline="central" fill="#633806">Continúa pipeline</text>
+
+<path d="M430 316 L430 328 L190 328 L190 340" fill="none" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M430 316 L430 328 L490 328 L490 340" fill="none" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- PASO 2 / PASO 3: PROCESAMIENTO (blue) -->
+<rect x="60" y="340" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="th" x="190" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Utilización (SARIMAX)</text>
+<text class="ts" x="190" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Saldo/Límite + exógenas</text>
+
+<rect x="360" y="340" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización (Logit+OLS)</text>
+<text class="ts" x="490" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Spread + desempleo lag2</text>
+
+<line x1="190" y1="404" x2="190" y2="440" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+<line x1="490" y1="404" x2="490" y2="440" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- OUTPUTS (green) -->
+<rect x="60" y="440" width="260" height="56" rx="8" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text class="th" x="190" y="460" text-anchor="middle" dominant-baseline="central" fill="#173404">Tasa_Utilizacion</text>
+<text class="ts" x="190" y="478" text-anchor="middle" dominant-baseline="central" fill="#27500A">Utilizacion_Fitted</text>
+
+<rect x="360" y="440" width="260" height="56" rx="8" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+<text class="th" x="490" y="460" text-anchor="middle" dominant-baseline="central" fill="#173404">Tasa_Pago_Mensual</text>
+<text class="ts" x="490" y="478" text-anchor="middle" dominant-baseline="central" fill="#27500A">TPR_Predicho</text>
+
+<!-- LEGEND -->
+<rect x="60" y="513" width="12" height="12" rx="2" fill="#B4B2A9"/>
+<text class="ts" x="78" y="522" fill="#444441">Input</text>
+<rect x="160" y="513" width="12" height="12" rx="2" fill="#EF9F27"/>
+<text class="ts" x="178" y="522" fill="#444441">Segmentación</text>
+<rect x="300" y="513" width="12" height="12" rx="2" fill="#378ADD"/>
+<text class="ts" x="318" y="522" fill="#444441">Procesamiento</text>
+<rect x="460" y="513" width="12" height="12" rx="2" fill="#639922"/>
+<text class="ts" x="478" y="522" fill="#444441">Output</text>
+</svg>
   </div>
-
-  <div class="rail">
-
-    <!-- INPUTS -->
-    <div class="row">
-      <div class="row-label">Inputs</div>
-      <div class="lane inputs">
-        <div class="card input">
-          <span class="tag">Base transaccional</span>
-          <div class="title">Datos cliente–mes</div>
-          <div class="desc">Límite de crédito, saldo facturado, monto pagado, por cliente y fecha.</div>
-        </div>
-        <div class="card input">
-          <span class="tag">Base macroeconómica</span>
-          <div class="title">Series mensuales</div>
-          <div class="desc">Confianza del consumidor, masa salarial, spread de tasas, desempleo, estacionalidad.</div>
-        </div>
-        <div class="card input">
-          <span class="tag">Configuración</span>
-          <div class="title">Parámetros del modelo</div>
-          <div class="desc">Ventana de observación (6 meses), umbral de tolerancia de pago (95%).</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="down-arrows">
-      <div><svg width="24" height="26"><defs><marker id="m1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z"/></marker></defs><line x1="12" y1="0" x2="12" y2="20" class="arrow-line" marker-end="url(#m1)"/></svg></div>
-      <div></div>
-      <div></div>
-    </div>
-
-    <!-- STAGE 1 -->
-    <div class="row">
-      <div class="row-label">Etapa 1</div>
-      <div class="lane">
-        <div class="card process">
-          <span class="tag">Segmentación conductual</span>
-          <div class="title">Rolling window 6 meses</div>
-          <div class="desc">Clasifica cada cliente-mes como pagador o no, y aplica una ventana móvil para etiquetar el comportamiento dominante.</div>
-        </div>
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card" style="visibility:hidden;"></div>
-      </div>
-    </div>
-
-    <div class="down-arrows">
-      <div><svg width="24" height="26"><line x1="12" y1="0" x2="12" y2="20" class="arrow-line" marker-end="url(#m1)"/></svg></div>
-      <div></div>
-      <div></div>
-    </div>
-
-    <div class="row">
-      <div class="row-label"></div>
-      <div class="lane">
-        <div class="card output">
-          <span class="tag">Output etapa 1</span>
-          <div class="title">Segmento_Conductual</div>
-          <div class="desc">Totalero vs. Revolvente — determina qué saldo entra al resto del pipeline.</div>
-        </div>
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card" style="visibility:hidden;"></div>
-      </div>
-    </div>
-
-    <!-- connector row1->row2 diagonal -->
-    <div class="connectors">
-      <svg class="conn" viewBox="0 0 1000 34" preserveAspectRatio="none">
-        <defs><marker id="m2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z"/></marker></defs>
-        <path d="M170,0 C 260,0 260,34 350,34" class="arrow-line strong" marker-end="url(#m2)"/>
-        <path d="M50,0 C 50,20 350,10 350,34" class="arrow-line" marker-end="url(#m2)" stroke-dasharray="3,4"/>
-      </svg>
-    </div>
-
-    <!-- STAGE 2 -->
-    <div class="row">
-      <div class="row-label">Etapa 2</div>
-      <div class="lane">
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card process">
-          <span class="tag">Modelo de utilización</span>
-          <div class="title">SARIMAX (1,1,1)</div>
-          <div class="desc">Predice qué % del cupo disponible usa la cartera revolvente cada mes, en función de macro y estacionalidad.</div>
-        </div>
-        <div class="card" style="visibility:hidden;"></div>
-      </div>
-    </div>
-
-    <div class="down-arrows">
-      <div></div>
-      <div><svg width="24" height="26"><line x1="12" y1="0" x2="12" y2="20" class="arrow-line" marker-end="url(#m1)"/></svg></div>
-      <div></div>
-    </div>
-
-    <div class="row">
-      <div class="row-label"></div>
-      <div class="lane">
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card output">
-          <span class="tag">Output etapa 2</span>
-          <div class="title">Tasa_Utilizacion</div>
-          <div class="desc">% del límite de crédito en uso — insumo de exposición para el cálculo de flujos futuros.</div>
-        </div>
-        <div class="card" style="visibility:hidden;"></div>
-      </div>
-    </div>
-
-    <div class="connectors">
-      <svg class="conn" viewBox="0 0 1000 34" preserveAspectRatio="none">
-        <path d="M500,0 C 590,0 590,34 680,34" class="arrow-line strong" marker-end="url(#m2)"/>
-        <path d="M170,0 C 300,10 590,0 680,34" class="arrow-line" marker-end="url(#m2)" stroke-dasharray="3,4"/>
-      </svg>
-    </div>
-
-    <!-- STAGE 3 -->
-    <div class="row">
-      <div class="row-label">Etapa 3</div>
-      <div class="lane">
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card process">
-          <span class="tag">Modelo de amortización</span>
-          <div class="title">Logit + Regresión OLS</div>
-          <div class="desc">Predice la velocidad de pago mensual (TPR) en función del spread de tasas y el desempleo rezagado.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="down-arrows">
-      <div></div>
-      <div></div>
-      <div><svg width="24" height="26"><line x1="12" y1="0" x2="12" y2="20" class="arrow-line" marker-end="url(#m1)"/></svg></div>
-    </div>
-
-    <div class="row">
-      <div class="row-label"></div>
-      <div class="lane">
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card" style="visibility:hidden;"></div>
-        <div class="card output">
-          <span class="tag">Output etapa 3</span>
-          <div class="title">TPR_Predicho</div>
-          <div class="desc">Tasa de pago mensual esperada — la "velocidad" a la que el saldo revolvente sale del balance.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="connectors">
-      <svg class="conn" viewBox="0 0 1000 34" preserveAspectRatio="none">
-        <path d="M830,0 C 830,20 700,20 700,34" class="arrow-line strong" marker-end="url(#m2)"/>
-        <path d="M830,0 C 900,16 950,16 950,34" class="arrow-line strong" marker-end="url(#m2)"/>
-      </svg>
-    </div>
-
-    <!-- FINAL -->
-    <div class="row">
-      <div class="row-label">Cierre</div>
-      <div class="final-lane">
-        <div class="card spacer"></div>
-        <div class="card decision">
-          <span class="tag">Sanity check</span>
-          <div class="title">Curva de decay implícita</div>
-          <div class="desc">Vida media no paramétrica derivada del TPR mensual, usada para contrastar contra el decay estilo NMD.</div>
-          <div class="mono-formula">S&#8348; = S&#8320; · &prod;(1 − TPR&#7522;)</div>
-        </div>
-        <div class="card decision">
-          <span class="tag">Insumo regulatorio</span>
-          <div class="title">Proyección de flujos y ∆EVE</div>
-          <div class="desc">Slotting temporal, descuento y cálculo de impacto de shocks de tasas bajo los seis escenarios de SRP31.</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="foot">
-    <div class="note"><b>Nota metodológica:</b> las tres etapas comparten como insumo la base macroeconómica; las líneas punteadas indican esa dependencia transversal, no un flujo secuencial adicional.</div>
-    <div class="ref">Interbank IRRBB Framework — v1</div>
-  </div>
-
 </div>
 </body>
 </html>
