@@ -83,7 +83,7 @@ SVG_DIAGRAM = """
 <text class="ts" x="190" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Saldo/Límite + exógenas</text>
 
 <rect x="360" y="340" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización (Logit+OLS)</text>
+<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización OLS Logi</text>
 <text class="ts" x="490" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Spread + desempleo lag2</text>
 
 <line x1="190" y1="404" x2="190" y2="440" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
