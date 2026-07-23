@@ -4,9 +4,7 @@ import streamlit.components.v1 as components
 st.set_page_config(page_title="T_Credito — Pipeline revolver de tarjetas", layout="centered")
 
 # ---------------------------------------------------------------------------
-# Estilos (se inyectan una sola vez y aplican a todo lo que renderizamos con
-# st.markdown(..., unsafe_allow_html=True) más abajo, que SÍ vive en la página
-# principal y por lo tanto hace scroll normal junto con el resto de la app).
+# Estilos
 # ---------------------------------------------------------------------------
 st.markdown("""
 <style>
@@ -32,8 +30,7 @@ st.markdown('<h1 class="pt">Pipeline T_Credito — documentación funcional</h1>
 st.markdown('<p class="sub">Interbank Perú. Lógica del código, inputs y outputs reales del modelo. Notas metodológicas al final.</p>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
-# DIAGRAMA — único bloque que va en un iframe (components.html). Altura fija
-# porque el SVG tiene un tamaño conocido; no necesita crecer ni scrollear.
+# DIAGRAMA SVG (iframe fijo)
 # ---------------------------------------------------------------------------
 SVG_DIAGRAM = """
 <div style="background:#FFFFFF;border:1px solid #DAD8CE;border-radius:12px;padding:24px;
@@ -112,13 +109,45 @@ SVG_DIAGRAM = """
 </div>
 """
 
-# height debe cubrir el card completo (svg 540 + padding 48). Si algún día
-# agrandas el diagrama, sube este número acorde al viewBox height + ~50.
 components.html(SVG_DIAGRAM, height=600, scrolling=False)
 
 # ---------------------------------------------------------------------------
-# TEXTO — todo esto va con st.markdown (NO components.html), así que vive en
-# la página normal de Streamlit y hace scroll junto con el resto de la app.
+# SECCIÓN DE GRÁFICAS — Botón toggle + tabs
+# ---------------------------------------------------------------------------
+RUTA_GRAFICA_1 = "image.png"
+RUTA_GRAFICA_2 = "image (1).png"
+
+# Usamos session_state para persistir el estado del panel
+if "mostrar_graficas" not in st.session_state:
+    st.session_state.mostrar_graficas = False
+
+col_btn, _ = st.columns([1, 3])
+with col_btn:
+    if st.button(
+        " Ocultar gráficas" if st.session_state.mostrar_graficas else " Mostrar gráficas",
+        type="primary",
+        use_container_width=True
+    ):
+        st.session_state.mostrar_graficas = not st.session_state.mostrar_graficas
+        st.rerun()
+
+if st.session_state.mostrar_graficas:
+    # Tabs para navegar entre las dos gráficas
+    tab1, tab2 = st.tabs([" Gráfica 1", " Gráfica 2"])
+
+    with tab1:
+        st.image(RUTA_GRAFICA_1, use_container_width=True)
+
+    with tab2:
+        st.image(RUTA_GRAFICA_2, use_container_width=True)
+
+    # Botón de cerrar al final del panel
+    if st.button("✕ Cerrar gráficas", type="secondary"):
+        st.session_state.mostrar_graficas = False
+        st.rerun()
+
+# ---------------------------------------------------------------------------
+# TEXTO DOCUMENTACIÓN (resto de tu contenido)
 # ---------------------------------------------------------------------------
 st.markdown("""
 <p class="body" style="margin-top:28px;">El pipeline recibe dos tablas de entrada y produce, en tres etapas
