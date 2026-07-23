@@ -31,7 +31,7 @@ with col_controls:
     with open("diagrama.html", "r", encoding="utf-8") as f:
         html_b64 = base64.b64encode(f.read().encode()).decode()
     st.link_button(
-        label="⛶ Abrir pantalla completa",
+        label="",
         url=f"data:text/html;base64,{html_b64}",
         use_container_width=True
     )
