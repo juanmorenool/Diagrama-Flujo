@@ -27,7 +27,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<h1 class="pt">Pipeline T_Credito — documentación funcional</h1>', unsafe_allow_html=True)
-st.markdown('<p class="sub">Interbank Perú. Lógica del código, inputs y outputs reales del modelo. Notas metodológicas al final.</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub">Interbank Perú. Lógica del código, inputs y outputs reales del modelo. </p>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
 # DIAGRAMA SVG (iframe fijo)
