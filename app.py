@@ -219,3 +219,4 @@ entran y salen del modelo.</p>
   <h2 class="sec">Nota sobre variables exógenas</h2>
   <p class="body">Adicional a las variables macroeconómicas exógenas, se pueden agregar otras variables al modelo a conveniencia.</p>
 </section>
+""", unsafe_allow_html=True)
