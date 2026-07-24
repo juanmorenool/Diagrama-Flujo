@@ -36,6 +36,7 @@
   .ts { font: 400 12px/1.3 -apple-system, "Segoe UI", Arial, sans-serif; }
   .th { font: 600 14px/1.3 -apple-system, "Segoe UI", Arial, sans-serif; }
 </style>
+<base target="_blank">
 </head>
 <body>
 <div class="wrap">
@@ -139,6 +140,11 @@
     <h2>Etapa 3 — Amortización OLS Logit</h2>
     <p class="body">Sobre el mismo universo revolver, agrupa por fecha y calcula <code class="field">Pagos_Totales</code>, <code class="field">Saldo_Total</code> y <code class="field">Tasa_Pago_Mensual = Pagos_Totales / Saldo_Total</code>. Tras el merge con la base macro, transforma el objetivo con <code class="field">TPR_Logit = log(TPR / (1 - TPR + ε))</code> y construye <code class="field">Desempleo_Lag2 = Tasa_Desempleo_Pct.shift(2)</code>.</p>
     <p class="body">La regresión estimada es <code class="field">TPR_Logit ~ Spread_TC_PP + Desempleo_Lag2</code> por OLS. La predicción en escala logit se revierte a porcentaje con la función logística: <code class="field">TPR_Predicho = 1 / (1 + exp(-predicción_logit))</code>.</p>
+  </section>
+
+  <section>
+    <h2>Nota sobre variables exógenas</h2>
+    <p class="body">Adicional a las variables macroeconómicas exógenas, se pueden agregar otras variables al modelo a conveniencia.</p>
   </section>
 
   <section>
