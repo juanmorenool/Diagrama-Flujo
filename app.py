@@ -83,7 +83,7 @@ SVG_DIAGRAM = """
 <text class="ts" x="190" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Saldo/Límite + exógenas</text>
 
 <rect x="360" y="340" width="260" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización OLS Logi</text>
+<text class="th" x="490" y="362" text-anchor="middle" dominant-baseline="central" fill="#042C53">Amortización OLS Logit</text>
 <text class="ts" x="490" y="382" text-anchor="middle" dominant-baseline="central" fill="#0C447C">Spread + desempleo lag2</text>
 
 <line x1="190" y1="404" x2="190" y2="440" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
@@ -192,7 +192,7 @@ entran y salen del modelo.</p>
 </section>
 
 <section class="blk">
-  <h2 class="sec">Etapa 3 — Amortización (Logit + OLS)</h2>
+  <h2 class="sec">Etapa 3 — Amortización OLS Logit</h2>
   <p class="body">Sobre el mismo universo revolver, agrupa por fecha y calcula <code class="field">Pagos_Totales</code>,
   <code class="field">Saldo_Total</code> y <code class="field">Tasa_Pago_Mensual = Pagos_Totales / Saldo_Total</code>.
   Tras el merge con la base macro, transforma el objetivo con
@@ -216,49 +216,6 @@ entran y salen del modelo.</p>
 </section>
 
 <section class="blk">
-  <span class="notes-tag">Notas</span>
-  <h2 class="sec">Consideraciones metodológicas</h2>
-  <p class="body">El pipeline se apoya en un principio simple: no toda la cartera de tarjetas tiene el mismo
-  comportamiento frente a tasas, y por lo tanto no puede modelarse como un bloque homogéneo. Antes de estimar
-  cualquier serie de tiempo, el modelo separa qué parte del saldo tiene duración económica real y cuál no la
-  tiene.</p>
-
-  <h3 class="subsec">Segmentación conductual</h3>
-  <p class="body">Un cliente que paga la totalidad de su saldo cada mes no genera duración económica que
-  proyectar: su exposición se extingue dentro del mismo ciclo en que se originó. Incluir a estos clientes en la
-  misma estimación que a los revolvers introduce ruido en la utilización y en la amortización, no porque el
-  modelo esté mal especificado, sino porque el universo sobre el que se estima está mal definido. Esta
-  clasificación es consistente con lo que SRP31 exige en materia de supuestos conductuales documentados.</p>
-
-  <h3 class="subsec">Modelo de utilización</h3>
-  <p class="body">El saldo absoluto de una cosecha nueva puede ser varios órdenes de magnitud mayor que el de
-  una cosecha antigua, simplemente porque el banco colocó más tarjetas en ese período. Esto refleja crecimiento
-  comercial, no un cambio en el comportamiento del producto. Por eso la variable modelada es la tasa de
-  utilización y no el saldo: una proporción acotada entre 0 y 1, independiente del volumen de colocación.</p>
-
-  <h3 class="subsec">Especificación SARIMAX (1,1,1)</h3>
-  <p class="body">Es una especificación deliberadamente conservadora: con un número limitado de observaciones
-  mensuales, una parametrización mayor incrementa el riesgo de sobreajuste antes de aportar poder explicativo
-  adicional.</p>
-
-  <h3 class="subsec">Modelo de amortización</h3>
-  <p class="body">Spread_TC_PP y Desempleo_Lag2 representan dos mecanismos distintos de riesgo de
-  comportamiento: el spread captura riesgo de opción, ya que un diferencial de tasas más alto incentiva al
-  cliente a refinanciar o amortizar más rápido; el desempleo, con dos meses de rezago, captura deterioro de
-  solvencia, que reduce la capacidad de pago independientemente de la voluntad del cliente.</p>
-
-  <h3 class="subsec">Limitaciones actuales</h3>
-  <p class="body">Con 72 observaciones mensuales y seis parámetros estimados, el SARIMAX presenta riesgo de
-  sobreajuste, y en la corrida actual los componentes AR y MA no resultan estadísticamente significativos. Esto
-  justifica probar alternativas más parsimoniosas, como ARIMA(0,1,1) o (1,1,0), antes de dar por definitiva la
-  actual. De forma similar, cuando el coeficiente de ICC_Puntos resulta negativo, la explicación más probable es
-  colinealidad con la masa salarial, y debería confirmarse con un análisis de VIF antes de descartar la
-  variable.</p>
-
-  <h3 class="subsec">Conclusión</h3>
-  <p class="body">La solidez del pipeline no depende de que cada coeficiente resulte significativo en la corrida
-  actual; eso se resuelve con más datos o una mejor especificación. Depende de que la secuencia de tres etapas
-  —segmentación, utilización y amortización— refleje correctamente lo que SRP31 exige: supuestos conductuales
-  documentados y consistentes con el comportamiento observado, previos a cualquier cálculo de ∆EVE.</p>
+  <h2 class="sec">Nota sobre variables exógenas</h2>
+  <p class="body">Adicional a las variables macroeconómicas exógenas, se pueden agregar otras variables al modelo a conveniencia.</p>
 </section>
-""", unsafe_allow_html=True)
